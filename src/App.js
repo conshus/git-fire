@@ -13,7 +13,7 @@ class App extends Component {
       user: {},
       projects: [],
       users: [],
-      userSearch: {}
+      userSearch: []
     }
   }
 
@@ -98,13 +98,29 @@ addUserToFirebase (event) {
   { data: { name: user } })
 }
 
+addSearchUserToFirebase (user) {
+  event.preventDefault();
+  console.log(user);
+  base.push(`/users/${this.state.user.uid}/users`,
+  { data: { name: user } })
+}
+
 displayUserSearch(){
   console.log(this.state.userSearch)
-  if (this.state.user.uid){
-    return (
+  if (this.state.userSearch.length !== 0){
+    return(
       <div>
-        <img src={this.state.userSearch.avatar_url}/>
-        <button onClick={this.addUserToFirebase.bind(this)}>Add To Favorites</button>
+        <h1>User Search Results</h1>
+        {console.log(this.state.userSearch)}
+        {this.state.userSearch.map((user, index) => {
+          return(
+             <div key={index}>
+               <a key={'link'+index} href={user.html_url} target="_blank"><img key={'user'+index} src={user.avatar_url} className="userSearchImage"/>{user.login}</a>
+               <button key={'button'+index} onClick={this.addSearchUserToFirebase.bind(this,user.login)}>Add to Favorites</button>
+             </div>
+
+          )}
+        )}
       </div>
     )
   }
@@ -112,8 +128,9 @@ displayUserSearch(){
 userSearch (event){
   event.preventDefault();
   const user = this.userName.value
-  axios.get('https://api.github.com/users/'+user)
-  .then(response => {this.setState({ userSearch: response.data})});
+  axios.get('https://api.github.com/search/users?q='+user)
+   //.then(response => console.log(response.data.items));
+  .then(response => {this.setState({ userSearch: response.data.items})});
 }
 
 formIfLoggedIn () {
