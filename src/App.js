@@ -12,7 +12,8 @@ class App extends Component {
     this.state = {
       user: {},
       projects: [],
-      users: []
+      users: [],
+      userSearch: {}
     }
   }
 
@@ -97,6 +98,24 @@ addUserToFirebase (event) {
   { data: { name: user } })
 }
 
+displayUserSearch(){
+  console.log(this.state.userSearch)
+  if (this.state.user.uid){
+    return (
+      <div>
+        <img src={this.state.userSearch.avatar_url}/>
+        <button onClick={this.addUserToFirebase.bind(this)}>Add To Favorites</button>
+      </div>
+    )
+  }
+}
+userSearch (event){
+  event.preventDefault();
+  const user = this.userName.value
+  axios.get('https://api.github.com/users/'+user)
+  .then(response => {this.setState({ userSearch: response.data})});
+}
+
 formIfLoggedIn () {
   if (this.state.user.uid) {
     return (
@@ -110,6 +129,11 @@ formIfLoggedIn () {
         <input placeholder='Favorite GitHub Users'
         ref={element => this.userName = element} />
         <button>Add to Firebase</button>
+      </form>
+      <form onSubmit={this.userSearch.bind(this)}>
+        <input placeholder='Enter GitHub Username'
+        ref={element => this.userName = element} />
+        <button>Search Users</button>
       </form>
     </div>
     )
@@ -131,7 +155,7 @@ projectsIfLoggedIn() {
   if (this.state.user.uid) {
     return(
       <div>
-        projects
+        <h1>projects</h1>
         {console.log(this.state.projects)}
         {this.state.projects.map((project,index) => {
           return(
@@ -150,7 +174,7 @@ usersIfLoggedIn() {
   if (this.state.user.uid) {
     return(
       <div>
-        users
+        <h1>users</h1>
         {console.log(this.state.users)}
         {this.state.users.map((user,index) => {
           return(
@@ -165,6 +189,7 @@ usersIfLoggedIn() {
   }
 }
 
+
   render() {
     return (
       <div className="App">
@@ -178,6 +203,7 @@ usersIfLoggedIn() {
         {this.formIfLoggedIn()}
         {this.projectsIfLoggedIn()}
         {this.usersIfLoggedIn()}
+        {this.displayUserSearch()}
       </div>
     );
   }
