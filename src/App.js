@@ -167,8 +167,8 @@ displayProjectSearch(){
 
 projectSearch (event){
   event.preventDefault();
-  const user = this.projectName.value
-  axios.get('https://api.github.com/search/repositories?q='+user)
+  const project = this.projectName.value
+  axios.get('https://api.github.com/search/repositories?q='+project)
    //.then(response => console.log(response.data.items));
   .then(response => {this.setState({ projectSearch: response.data.items})});
 }
