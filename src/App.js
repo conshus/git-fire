@@ -13,7 +13,8 @@ class App extends Component {
       user: {},
       projects: [],
       users: [],
-      userSearch: []
+      userSearch: [],
+      projectSearch: []
     }
   }
 
@@ -125,6 +126,8 @@ displayUserSearch(){
     )
   }
 }
+
+
 userSearch (event){
   event.preventDefault();
   const user = this.userName.value
@@ -132,6 +135,44 @@ userSearch (event){
    //.then(response => console.log(response.data.items));
   .then(response => {this.setState({ userSearch: response.data.items})});
 }
+
+addSearchProjectToFirebase (project) {
+  event.preventDefault();
+  console.log(project);
+  base.push(`/users/${this.state.user.uid}/projects`,
+  { data: { name: project } })
+}
+displayProjectSearch(){
+  console.log(this.state.projectSearch)
+  if (this.state.projectSearch.length !== 0){
+    return(
+      <div>
+        <h1>Repos Search Results</h1>
+        {console.log(this.state.projectSearch)}
+        <ul>
+        {this.state.projectSearch.map((project, index) => {
+          return(
+             <li key={index}>
+               <a key={'link'+index} href={project.html_url} target="_blank">{project.name}</a>
+               <button key={'button'+index} onClick={this.addSearchProjectToFirebase.bind(this,project.name)}>Add to Favorites</button>
+             </li>
+
+          )}
+        )}
+      </ul>
+      </div>
+    )
+  }
+}
+
+projectSearch (event){
+  event.preventDefault();
+  const user = this.projectName.value
+  axios.get('https://api.github.com/search/repositories?q='+user)
+   //.then(response => console.log(response.data.items));
+  .then(response => {this.setState({ projectSearch: response.data.items})});
+}
+
 
 formIfLoggedIn () {
   if (this.state.user.uid) {
@@ -151,6 +192,11 @@ formIfLoggedIn () {
         <input placeholder='Enter GitHub Username'
         ref={element => this.userName = element} />
         <button>Search Users</button>
+      </form>
+      <form onSubmit={this.projectSearch.bind(this)}>
+        <input placeholder='Enter GitHub Repo'
+        ref={element => this.projectName = element} />
+        <button>Search Repos</button>
       </form>
     </div>
     )
@@ -221,6 +267,7 @@ usersIfLoggedIn() {
         {this.projectsIfLoggedIn()}
         {this.usersIfLoggedIn()}
         {this.displayUserSearch()}
+        {this.displayProjectSearch()}
       </div>
     );
   }
