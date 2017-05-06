@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import base from './rebase';
 import logo from './logo.svg';
+import giphy from './github-giphy-downsized.gif';
 import './App.css';
 
 window.base = base; //Use base from console
@@ -14,7 +15,8 @@ class App extends Component {
       projects: [],
       users: [],
       userSearch: [],
-      projectSearch: []
+      projectSearch: [],
+      userProjectToggle: true
     }
   }
 
@@ -65,10 +67,10 @@ componentDidMount() {
 
   loginOrLogoutButton (){
     if (this.state.user.uid){
-      return <button
-        onClick={this.logout.bind(this)}>Logout</button>
+      return <button className="waves-effect waves-light btn"
+        onClick={this.logout.bind(this)}><i className="fa fa-github" aria-hidden="true"></i> Logout</button>
     } else {
-      return <button onClick={this.login.bind(this)}>Login</button>
+      return <button className="waves-effect waves-light btn" onClick={this.login.bind(this)}><i className="fa fa-github" aria-hidden="true"></i> Login</button>
     }
   }
 
@@ -111,7 +113,7 @@ displayUserSearch(){
   if (this.state.userSearch.length !== 0){
     return(
       <div>
-        <h1>User Search Results</h1>
+        <h6>User Search Results</h6>
         {console.log(this.state.userSearch)}
         {this.state.userSearch.map((user, index) => {
           return(
@@ -140,21 +142,66 @@ addSearchProjectToFirebase (project) {
   event.preventDefault();
   console.log(project);
   base.push(`/users/${this.state.user.uid}/projects`,
-  { data: { name: project } })
+  { data: { name: project.name, id: project.id} })
+}
+
+removeSearchProjectFromFirebase (projectToBeRemoved){
+  event.preventDefault();
+  console.log(projectToBeRemoved);
+  console.log(this.state.projects)
+  let projectRemovedFromFavorites = this.state.projects.find(function(project){
+    return project.id === projectToBeRemoved.id
+  })
+
+  console.log(projectRemovedFromFavorites)
+  base.remove(`/users/${this.state.user.uid}/projects/${projectRemovedFromFavorites.key}`, function(err){
+    if(!err){
+      console.log('Record deleted');
+    } else {
+      console.log(err);
+    }
+  });
+
+
+  // let filteredProjects = this.state.projects.filter(function(project){
+  //   return project.id === projectRemoved.id
+  // })
+  // this.setState({
+  //   projects: filteredProjects
+  // })
+
+}
+
+addOrRemoveButton (project){
+  const projectIds = this.state.projects.map(project => project.id);
+  //console.log(projectIds);
+  //console.log(project);
+  const alreadyInFirebase = projectIds.includes(project.id)
+
+  if (alreadyInFirebase){
+    //let projectRemoved =
+    return <button onClick={this.removeSearchProjectFromFirebase.bind(this,project)}>Remove from Favorites</button>
+  } else {
+    return <button onClick={this.addSearchProjectToFirebase.bind(this,project)}>Add to Favorites</button>
+  }
 }
 displayProjectSearch(){
   console.log(this.state.projectSearch)
   if (this.state.projectSearch.length !== 0){
     return(
       <div>
-        <h1>Repos Search Results</h1>
+        <h6>Repos Search Results</h6>
         {console.log(this.state.projectSearch)}
+        <h6>{this.state.projectSearch.total_count} Results</h6>
         <ul>
-        {this.state.projectSearch.map((project, index) => {
+        {this.state.projectSearch.items.map((project, index) => {
           return(
              <li key={index}>
                <a key={'link'+index} href={project.html_url} target="_blank">{project.name}</a>
-               <button key={'button'+index} onClick={this.addSearchProjectToFirebase.bind(this,project.name)}>Add to Favorites</button>
+               <br/> <img src={project.owner.avatar_url} className="userSearchImage"/>by {project.owner.login}
+               <br/>{project.stargazers_count}
+               {this.addOrRemoveButton(project)}
+               {/* <button key={'button'+index} onClick={this.addSearchProjectToFirebase.bind(this,project)}>Add to Favorites</button> */}
              </li>
 
           )}
@@ -170,7 +217,7 @@ projectSearch (event){
   const project = this.projectName.value
   axios.get('https://api.github.com/search/repositories?q='+project)
    //.then(response => console.log(response.data.items));
-  .then(response => {this.setState({ projectSearch: response.data.items})});
+  .then(response => {this.setState({ projectSearch: response.data})});
 }
 
 
@@ -218,7 +265,14 @@ projectsIfLoggedIn() {
   if (this.state.user.uid) {
     return(
       <div>
-        <h1>projects</h1>
+        <h6>projects</h6>
+        <form onSubmit={this.projectSearch.bind(this)}>
+          <input placeholder='Enter GitHub Repo'
+          ref={element => this.projectName = element} />
+          <button>Search Repos</button>
+        </form>
+        {this.displayProjectSearch()}
+
         {console.log(this.state.projects)}
         {this.state.projects.map((project,index) => {
           return(
@@ -237,7 +291,14 @@ usersIfLoggedIn() {
   if (this.state.user.uid) {
     return(
       <div>
-        <h1>users</h1>
+        <h6>users</h6>
+        <form onSubmit={this.userSearch.bind(this)}>
+          <input placeholder='Enter GitHub Username'
+          ref={element => this.userName = element} />
+          <button>Search Users</button>
+        </form>
+        {this.displayUserSearch()}
+
         {console.log(this.state.users)}
         {this.state.users.map((user,index) => {
           return(
@@ -252,22 +313,89 @@ usersIfLoggedIn() {
   }
 }
 
+toggleUserProject(tabPressed){
+  if (tabPressed==="users"){
+    this.setState({
+      userProjectToggle: true
+    })
+  } else {
+    this.setState({
+      userProjectToggle: false
+    })
 
+  }
+}
+
+favoritesSection(){
+  if (this.state.user.uid){
+    return(
+      <div>
+        <div className="card-tabs">
+          <ul className="tabs tabs-fixed-width">
+            <li className="tab" onClick={this.toggleUserProject.bind(this,"users")}><a className="active">Users</a></li>
+            <li className="tab" onClick={this.toggleUserProject.bind(this,"projects")}><a>Repos</a></li>
+          </ul>
+        </div>
+        {this.state.userProjectToggle && this.usersIfLoggedIn()}
+        {!this.state.userProjectToggle && this.projectsIfLoggedIn()}
+
+      </div>
+    )
+  }
+}
+displayLoginSplash(){
+  if (!this.state.user.uid){
+    return(
+      <div className="wholeScreen flex hcenter vcenter">
+        <div className="card loginSplash">
+          <div className="card-image">
+            <img src={giphy} className="responsive-img" alt="github giphy" />
+            <span className="card-title"></span>
+          </div>
+          <div className="card-content">
+            {this.loginOrLogoutButton()}
+          </div>
+        </div>
+      </div>
+
+    )
+  }
+}
+userDashboard(){
+  if (this.state.user.uid){
+    return(
+      <div className="userDashboard">
+        <div className="row">
+          <div className="col s12 m4">{this.loginOrLogoutButton()}</div>
+          <div className="col s12 m4">
+            favorites
+            {this.favoritesSection()}
+          </div>
+          <div className="col s12 m4">more details</div>
+        </div>
+
+      </div>
+    )
+  }
+}
   render() {
     return (
       <div className="App">
+        {this.displayLoginSplash()}
+        {this.userDashboard()}
+
+{/*
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome to React</h2>
         </div>
         <p className="App-intro">
-          {this.loginOrLogoutButton()}
         </p>
         {this.formIfLoggedIn()}
         {this.projectsIfLoggedIn()}
         {this.usersIfLoggedIn()}
         {this.displayUserSearch()}
-        {this.displayProjectSearch()}
+        {this.displayProjectSearch()} */}
       </div>
     );
   }
