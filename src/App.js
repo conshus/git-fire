@@ -114,7 +114,7 @@ addSearchUserToFirebase (user) {
 }
 
 displayUserSearch(){
-  console.log(this.state.userSearch)
+  // console.log(this.state.userSearch)
   if (this.state.userSearch.length !== 0){
     return(
       <div>
@@ -283,7 +283,7 @@ projectsIfLoggedIn() {
           return(
             <div key={project.key+index}>
               <div key={project.key}>{project.name}</div>
-              <Link to={"/project/"+project.id}>more info</Link>
+              <Link to={`/project/${project.id}`}>more info</Link>
               <button key={index} onClick={this.removeRecord.bind(this,'projects',project.key)}>Remove</button>
             </div>
           )}
@@ -305,7 +305,7 @@ usersIfLoggedIn() {
         </form>
         {this.displayUserSearch()}
 
-        {console.log(this.state.users)}
+        {/* {console.log(this.state.users)} */}
         {this.state.users.map((user,index) => {
           return(
             <div key={user.key+index}>
@@ -399,9 +399,10 @@ userDashboard(){
       <div className="App">
 
         {this.displayLoginSplash()}
+        {/* <Router forceRefresh={true}> */}
         <Router>
-        {this.userDashboard()}
-      </Router>
+          {this.userDashboard()}
+        </Router>
 
 
 {/*
