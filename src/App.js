@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link
+} from 'react-router-dom';
 import axios from 'axios';
 import base from './rebase';
 import logo from './logo.svg';
 import giphy from './github-giphy-downsized.gif';
 import './App.css';
-
+import ProjectPage from './ProjectPage';
 window.base = base; //Use base from console
 class App extends Component {
 
@@ -278,6 +283,7 @@ projectsIfLoggedIn() {
           return(
             <div key={project.key+index}>
               <div key={project.key}>{project.name}</div>
+              <Link to={"/project/"+project.id}>more info</Link>
               <button key={index} onClick={this.removeRecord.bind(this,'projects',project.key)}>Remove</button>
             </div>
           )}
@@ -361,17 +367,27 @@ displayLoginSplash(){
     )
   }
 }
+
 userDashboard(){
   if (this.state.user.uid){
     return(
       <div className="userDashboard">
+
         <div className="row">
           <div className="col s12 m4">{this.loginOrLogoutButton()}</div>
           <div className="col s12 m4">
             favorites
             {this.favoritesSection()}
           </div>
-          <div className="col s12 m4">more details</div>
+          <div className="col s12 m4">
+            {/* <Router> */}
+            <Route path='/project/:id?' render={(defaultProps) => {
+              return <ProjectPage {...defaultProps} />
+                }
+              }
+            />
+            {/* </Router> */}
+          </div>
         </div>
 
       </div>
@@ -381,8 +397,12 @@ userDashboard(){
   render() {
     return (
       <div className="App">
+
         {this.displayLoginSplash()}
+        <Router>
         {this.userDashboard()}
+      </Router>
+
 
 {/*
         <div className="App-header">
