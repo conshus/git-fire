@@ -35,8 +35,8 @@ displayUserProjects(){
       return(
          <div key={index}>
            <Link to={`/project/${project.id}`}>
-           {project.name}
-         </Link>
+             {project.name}
+           </Link>
          </div>
 
       )}
