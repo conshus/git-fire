@@ -10,6 +10,7 @@ import logo from './logo.svg';
 import giphy from './github-giphy-downsized.gif';
 import './App.css';
 import ProjectPage from './ProjectPage';
+import UserProjectPage from './UserProjectPage';
 window.base = base; //Use base from console
 class App extends Component {
 
@@ -383,7 +384,12 @@ userDashboard(){
           <div className="col s12 m4">
             {/* <Router> */}
             <Route path='/project/:id?' render={(defaultProps) => {
-              return <ProjectPage {...defaultProps} />
+              return <ProjectPage user={this.state.user} {...defaultProps} />
+                }
+              }
+            />
+            <Route path='/user/:id?' render={(defaultProps) => {
+              return <UserProjectPage user={this.state.user} {...defaultProps} />
                 }
               }
             />
