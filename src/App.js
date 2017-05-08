@@ -123,8 +123,8 @@ displayUserSearch(){
         {this.state.userSearch.map((user, index) => {
           return(
              <div key={index}>
-               <a key={'link'+index} href={user.html_url} target="_blank"><img key={'user'+index} src={user.avatar_url} className="userSearchImage"/>{user.login}</a>
-               <button key={'button'+index} onClick={this.addSearchUserToFirebase.bind(this,user.login)}>Add to Favorites</button>
+               <a key={'link'+index} href={user.html_url} target="_blank"><img key={'user'+index} src={user.avatar_url} className="circle userSearchImage"/>{user.login}</a>
+               <button key={'button'+index} className="waves-effect waves-light btn" onClick={this.addSearchUserToFirebase.bind(this,user.login)}>Add to Favorites</button>
              </div>
 
           )}
@@ -185,9 +185,9 @@ addOrRemoveButton (project){
 
   if (alreadyInFirebase){
     //let projectRemoved =
-    return <button onClick={this.removeSearchProjectFromFirebase.bind(this,project)}>Remove from Favorites</button>
+    return <button className="waves-effect waves-light btn" onClick={this.removeSearchProjectFromFirebase.bind(this,project)}>Remove from Favorites</button>
   } else {
-    return <button onClick={this.addSearchProjectToFirebase.bind(this,project)}>Add to Favorites</button>
+    return <button className="waves-effect waves-light btn" onClick={this.addSearchProjectToFirebase.bind(this,project)}>Add to Favorites</button>
   }
 }
 displayProjectSearch(){
@@ -203,8 +203,9 @@ displayProjectSearch(){
           return(
              <li key={index}>
                <a key={'link'+index} href={project.html_url} target="_blank">{project.name}</a>
-               <br/> <img src={project.owner.avatar_url} className="userSearchImage"/>by {project.owner.login}
-               <br/>{project.stargazers_count}
+               <br/> <img src={project.owner.avatar_url} className="circle userSearchImage"/>by {project.owner.login}
+               <br/>{project.stargazers_count} <i className="material-icons">grade</i>
+               <Link  className="waves-effect waves-light btn" to={`/project/${project.id}`}>More Info</Link>
                {this.addOrRemoveButton(project)}
                {/* <button key={'button'+index} onClick={this.addSearchProjectToFirebase.bind(this,project)}>Add to Favorites</button> */}
              </li>
@@ -233,22 +234,22 @@ formIfLoggedIn () {
       <form onSubmit={this.addProjectToFirebase.bind(this)}>
         <input placeholder='Favorite GitHub Projects'
         ref={element => this.projectName = element} />
-        <button>Add to Firebase</button>
+        <button className="waves-effect waves-light btn">Add to Firebase</button>
       </form>
       <form onSubmit={this.addUserToFirebase.bind(this)}>
         <input placeholder='Favorite GitHub Users'
         ref={element => this.userName = element} />
-        <button>Add to Firebase</button>
+        <button className="waves-effect waves-light btn">Add to Firebase</button>
       </form>
       <form onSubmit={this.userSearch.bind(this)}>
         <input placeholder='Enter GitHub Username'
         ref={element => this.userName = element} />
-        <button>Search Users</button>
+        <button className="waves-effect waves-light btn">Search Users</button>
       </form>
       <form onSubmit={this.projectSearch.bind(this)}>
         <input placeholder='Enter GitHub Repo'
         ref={element => this.projectName = element} />
-        <button>Search Repos</button>
+        <button className="waves-effect waves-light btn">Search Repos</button>
       </form>
     </div>
     )
@@ -271,23 +272,23 @@ projectsIfLoggedIn() {
     return(
       <div>
         <h6>projects</h6>
-        <form onSubmit={this.projectSearch.bind(this)}>
-          <input placeholder='Enter GitHub Repo'
-          ref={element => this.projectName = element} />
-          <button>Search Repos</button>
-        </form>
-        {this.displayProjectSearch()}
-
-        {console.log(this.state.projects)}
         {this.state.projects.map((project,index) => {
           return(
             <div key={project.key+index}>
               <div key={project.key}>{project.name}</div>
-              <Link to={`/project/${project.id}`}>more info</Link>
-              <button key={index} onClick={this.removeRecord.bind(this,'projects',project.key)}>Remove</button>
+              <Link  className="waves-effect waves-light btn" to={`/project/${project.id}`}>more info</Link>
+              <button className="waves-effect waves-light btn" key={index} onClick={this.removeRecord.bind(this,'projects',project.key)}>Remove</button>
             </div>
           )}
         )}
+        <form onSubmit={this.projectSearch.bind(this)}>
+          <input placeholder='Enter GitHub Repo'
+          ref={element => this.projectName = element} />
+          <button className="waves-effect waves-light btn">Search Repos</button>
+        </form>
+        {this.displayProjectSearch()}
+
+        {console.log(this.state.projects)}
       </div>
     )
   }
@@ -298,22 +299,22 @@ usersIfLoggedIn() {
     return(
       <div>
         <h6>users</h6>
-        <form onSubmit={this.userSearch.bind(this)}>
-          <input placeholder='Enter GitHub Username'
-          ref={element => this.userName = element} />
-          <button>Search Users</button>
-        </form>
-        {this.displayUserSearch()}
-
-        {/* {console.log(this.state.users)} */}
         {this.state.users.map((user,index) => {
           return(
             <div key={user.key+index}>
               <div key={user.key}>{user.name}</div>
-              <button key={index} onClick={this.removeRecord.bind(this,'users',user.key)}>Remove</button>
+              <button className="waves-effect waves-light btn" key={index} onClick={this.removeRecord.bind(this,'users',user.key)}>Remove</button>
             </div>
           )}
         )}
+        <form onSubmit={this.userSearch.bind(this)}>
+          <input placeholder='Enter GitHub Username'
+          ref={element => this.userName = element} />
+          <button className="waves-effect waves-light btn">Search Users</button>
+        </form>
+        {this.displayUserSearch()}
+
+        {/* {console.log(this.state.users)} */}
       </div>
     )
   }

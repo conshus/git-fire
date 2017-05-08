@@ -8,113 +8,48 @@ class ProjectPage extends Component{
     super();
     this.state = {
       projectPage: {},
+      projectPageOwner:{}
     }
   }
-  // componentDidMount (){
-  //   console.log(this.props.match.params.id)
-  //   axios.get('https://api.github.com/repositories/'+this.props.match.params.id)
-  //   .then(response => {this.setState({ projectPage: response.data})});
-  //   this.render()
-  //
-  // }
+  componentDidMount (){
+    console.log(this.props.match.params.id)
+    axios.get('https://api.github.com/repositories/'+this.props.match.params.id)
+    .then(response => {this.setState({ projectPage: response.data})});
+    this.render()
 
-//   shouldComponentUpdate (nextProps, nextState){
-//     console.log('shouldComponentUpdate',nextProps.match, nextState)
-//     if (nextProps.match.params.id != nextState.projectPage.id){
-//       axios.get('https://api.github.com/repositories/'+nextProps.match.params.id)
-//       .then(response => {this.setState({ projectPage: response.data})});
-//       console.log("don't match, should update")
-//       this.render()
-//       return true;
-//     } else {
-//       console.log("match, no need to update");
-//
-//       return false;
-//     }
-//     // return a boolean value
-// }
-//
-// componentWillUpdate (nextProps, nextState){
-//     console.log('componentWillUpdate')
-//     axios.get('https://api.github.com/repositories/'+nextProps.match.params.id)
-//     .then(response => {this.setState({ projectPage: response.data})});
-// }
+  }
 
 componentWillReceiveProps(nextProps){
   console.log('componentWillReceiveProps',nextProps)
   axios.get('https://api.github.com/repositories/'+nextProps.match.params.id)
-  .then(response => {this.setState({ projectPage: response.data})});
-}
-//   componentDidUpdate() {
-//           console.log('component did update')
-//           console.log(this.props.match.params.id)
-//           axios.get('https://api.github.com/repositories/'+this.props.match.params.id)
-//           .then(response => {this.setState({ projectPage: response.data})});
-//       }
-  printProjectInfo(project)
-  {
-    return (
-     <div>this should work</div>
-   )
-  }
-
-  getProjectInfo(projectId){
-    axios.get('https://api.github.com/repositories/'+projectId)
-    .then(response => {this.setState({ projectPage: response.data})});
-
-    //.then(object => this.printProjectInfo(object))
-    //  .then(object => {
-    //    //console.log(object.data)
-    //      const project = object.data;
-    //     return(
-    //       // <div>
-    //         //this should show up
-    //         //{console.log(project.owner.login)}
-    //       <h6>{project.owner.login}</h6>
-    //     // </div>
-    //     )
-    //  });
-  }
- // test(){
- //   console.log(this.props.match.params.id)
- //   //this.getProjectInfo(this.props.match.params.id)
- //   return(
- //     <div>this should show up!</div>
- //   )
- // }
-displayProjectInfo(){
-  console.log('displayProjectInfo')
-  console.log(this.state.projectPage)
-  this.getProjectInfo(this.state.projectPage.id)
-  // if (this.props.state.projectPage){
-  //   return(
-  //     <div>
-  //       <h6>Project Info</h6>
-  //       {console.log(this.state.projectPage)}
-  //
-  //         )}
-  //       )}
-  //     </div>
-  //   )
-  // }
-
+  .then(response => {
+    this.setState({
+      projectPage: response.data,
+      projectPageOwner: response.data.owner
+    })
+  });
 }
 
 
   render(){
     const projectId = this.props.match.params.id;
     //this.getProjectInfo(projectId);
+    console.log(this.state.projectPage);
+    console.log(this.state.projectPageOwner);
     return(
       <section>
-        {console.log(projectId)}
-        {console.log(this.state.projectPage)}
-        Here is the Project Page
-        <br/>projectPage.id:{this.state.projectPage.id}
-        <br/>projectPage.id:{this.state.projectPage.name}
+        <br/>Project: {this.state.projectPage.name}
         <br/> projectId: {projectId}
-        {/* {this.getProjectInfo(projectId)} */}
-        {/* {this.test()} */}
-        {/* {this.displayProjectInfo()} */}
+        <br/><a href={this.state.projectPage.html_url} target="_blank">Project link on GitHub</a>
+        <br/> <img src={this.state.projectPageOwner.avatar_url} className="circle userSearchImage"/>by {this.state.projectPageOwner.login}
+        <br/>{this.state.projectPage.stargazers_count} <i className="material-icons">grade</i>
+        <br/><a href={this.state.projectPageOwner.html_url} target="_blank">Owner GitHub page</a>
+        <br/>created: {this.state.projectPage.created_at}
+        <br/>updated: {this.state.projectPage.updated_at}
+        <br/>homepage: <a href={this.state.projectPage.homepage} target="_blank">{this.state.projectPage.homepage}</a>
+        <br/>language(s): {this.state.projectPage.language}
+        <br/>open issue count: {this.state.projectPage.open_issues_count}
+        <br/><input placeholder='Enter a comment' />
       </section>
     )
   }

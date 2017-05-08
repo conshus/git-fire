@@ -3,3 +3,48 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+html, body {
+  font-family: 'Roboto', sans-serif;
+  /*font-size: 3vw;*/
+}
+.flex {
+  display: flex;
+}
+.flexcolumn{
+  flex-direction: column;
+}
+.wrap{
+  flex-wrap: wrap;
+}
+.vcenter {
+  align-items: center;
+}
+.hcenter {
+ justify-content: center;
+}
+.space_between{
+ justify-content: space-between;
+ width:100%
+}
+.space_around{
+ justify-content: space-around;
+ flex-wrap: wrap;
+}
+.space{
+  background-color: gray;
+  width:30vmin;
+  height:30vmin;
+  margin:1vmin;
+  font-size: 30vmin;
+}
+.taken{
+  pointer-events: none;
+}
+.wholeScreen{
+  width:100vw;
+  height:100vh;
+}
+.loginSplash{
+  width:50vw;
+  margin:0;
+}
